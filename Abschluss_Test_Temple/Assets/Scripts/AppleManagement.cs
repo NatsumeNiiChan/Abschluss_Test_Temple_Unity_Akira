@@ -7,10 +7,18 @@ public class AppleManagement : MonoBehaviour
     private Vector3 mousePosition;
     private Color col;
     private bool isDragged;
-    private float rotation;
+    private bool isFinished;
+    private GameHandler gameScript;
+    [SerializeField] private float rotation;
     [SerializeField] private float dist;
     
     [SerializeField] private Transform appleTrans;
+
+    private void Awake()
+    {
+        rotation = GetComponent<Transform>().rotation.z;
+        gameScript = FindObjectOfType<GameHandler>();
+    }
 
     private void Update()
     {
@@ -22,11 +30,10 @@ public class AppleManagement : MonoBehaviour
 
         CalculateDistance();
 
-        if (dist <= 0.1f && rotation <= 1)
+        if (dist <= 0.1f && rotation <= 0.1 && isFinished == false)
         {
-            gameObject.transform.position = new Vector3(0, 0, 0);
-            gameObject.GetComponent<AppleManagement>().enabled = false;
-            Destroy(gameObject.GetComponent<AppleManagement>());
+            isFinished = true;
+            gameObject.GetComponent<BoxCollider>().enabled = false;
         }
     }
 
@@ -52,6 +59,12 @@ public class AppleManagement : MonoBehaviour
     {
         GetComponent<MeshRenderer>().material.color = col;
         isDragged = false;
+        
+        if (isFinished == true)
+        {
+            gameObject.GetComponent<Transform>().localPosition = new Vector3(0, 0, 0);
+            gameScript.ApplePoints++;
+        }
     }
 
     private void CalculateDistance()
